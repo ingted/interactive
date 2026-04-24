@@ -11,7 +11,7 @@
   ],
   "preview": false,
   "//version": "%description.version%",
-  "version": "42.42.42",
+  "version": "1.0.0-net10",
   "engines": {
     "vscode": "^1.87.0"
   },
@@ -179,11 +179,7 @@
         "dotnet-interactive.kernelTransportArgs": {
           "type": "array",
           "default": [
-            "{dotnet_path}",
-            "tool",
-            "run",
             "dotnet-interactive",
-            "--",
             "[vscode]",
             "stdio",
             "--working-dir",
@@ -194,11 +190,7 @@
         "dotnet-interactive.notebookParserArgs": {
           "type": "array",
           "default": [
-            "{dotnet_path}",
-            "tool",
-            "run",
             "dotnet-interactive",
-            "--",
             "notebook-parser"
           ]
         },
@@ -209,17 +201,17 @@
         },
         "dotnet-interactive.interactiveToolSource": {
           "type": "string",
-          "default": "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json",
+          "default": "S:\\\\SSIS\\\\CICD起源\\\\interactive\\\\artifacts\\\\packages\\\\Release\\\\Shipping",
           "description": "%description.interactiveToolSource%"
         },
         "dotnet-interactive.minimumDotNetSdkVersion": {
           "type": "string",
-          "default": "9.0",
+          "default": "10.0",
           "description": "%description.minimumDotNetSdkVersion%"
         },
         "dotnet-interactive.requiredInteractiveToolVersion": {
           "type": "string",
-          "default": "1.0.516801",
+          "default": "1.0.722301",
           "description": "%description.requiredInteractiveToolVersion%"
         }
       }

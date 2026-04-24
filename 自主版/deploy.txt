@@ -1,0 +1,4 @@
+dotnet tool uninstall -g Microsoft.dotnet-interactive
+dotnet tool install -g Microsoft.dotnet-interactive --add-source "S:\SSIS\CICD起源\interactive\自主版" --version 1.0.722301
+code --install-extension "S:\SSIS\CICD起源\interactive\自主版\stable\polyglot-net10-fsharpcore-101-fix.vsix" --force
+

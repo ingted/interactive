@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FSharp.Compiler.DependencyManager;
+using Microsoft.FSharp.Core;
 using Pocket;
 using static Pocket.Logger;
 
@@ -227,7 +228,7 @@ public class PackageRestoreContext : IDisposable
         string executionTfm,
         ResolvingErrorReport reportError)
     {
-        IDependencyManagerProvider iDependencyManager = _dependencyProvider.TryFindDependencyManagerByKey(Enumerable.Empty<string>(), "", reportError, "nuget");
+        IDependencyManagerProvider iDependencyManager = _dependencyProvider.TryFindDependencyManagerByKey(Enumerable.Empty<string>(), "", FSharpOption<string>.None, reportError, "nuget");
 
         if (iDependencyManager is null)
         {

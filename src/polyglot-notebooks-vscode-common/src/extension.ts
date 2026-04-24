@@ -524,10 +524,5 @@ function handleFileRenames(e: vscode.FileRenameEvent, clientMapper: ClientMapper
 }
 
 async function getInteractiveLaunchOptions(): Promise<InteractiveLaunchOptions | undefined> {
-    // use dotnet-interactive or install
-    const installArgs: InstallInteractiveArgs = {
-        dotnetPath: DotNetPathManager.getDotNetPath(),
-    };
-    const launchOptions = await vscode.commands.executeCommand<InteractiveLaunchOptions>('dotnet-interactive.acquire', installArgs);
-    return launchOptions;
+    return { workingDirectory: __dirname };
 }

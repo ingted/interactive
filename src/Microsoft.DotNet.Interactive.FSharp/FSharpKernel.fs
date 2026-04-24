@@ -47,6 +47,7 @@ type FSharpKernel () as this =
             "/langversion:preview"
             "/usesdkrefs-" // work around ref/impl type resolution; see https://github.com/dotnet/fsharp/issues/10496
             "--multiemit-" // work around inability to reference types defined in this assembly; see https://github.com/dotnet/fsharp/issues/13197
+            $"-r:{typeof<Microsoft.FSharp.Core.Unit>.Assembly.Location}"
             |]
         lock lockObj (fun () -> new FSharpScript(additionalArgs=additionalArgs))
 

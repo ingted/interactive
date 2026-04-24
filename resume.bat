@@ -1,0 +1,1 @@
+gemini --resume '2c0521bc-6885-4a9f-997e-bee201e349cb'
