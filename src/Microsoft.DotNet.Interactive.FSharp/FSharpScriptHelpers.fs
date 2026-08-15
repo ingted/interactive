@@ -44,6 +44,7 @@ type FSharpScript(?additionalArgs: string[], ?quiet: bool, ?langVersion: LangVer
     let argv = Array.append baseArgs additionalArgs
 
     let fsi = FsiEvaluationSession.Create (config, argv, stdin, stdout, stderr)
+    do fsi.AddBoundValue("fsi", Settings.fsi)
 
     member _.ValueBound = fsi.ValueBound
 

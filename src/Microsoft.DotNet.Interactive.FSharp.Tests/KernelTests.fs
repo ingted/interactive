@@ -4,6 +4,7 @@
 namespace Microsoft.DotNet.Interactive.FSharp.Tests
 
 open System.Collections.Generic
+open System.IO
 
 open FluentAssertions
 open Microsoft.DotNet.Interactive
@@ -151,3 +152,25 @@ C().
 
         let hasYeeYeeBackticked = completions |> Array.contains ("Yee Yee", "``Yee Yee``")
         Assert.True(hasYeeYeeBackticked, $"Insert and display text aren't correct:\n%A{completions}")
+
+    [<Fact>]
+    member _.``FSI settings are available to loaded scripts``() =
+        let scriptPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".fsx")
+
+        try
+            File.WriteAllText(
+                scriptPath,
+                """
+let loadedArgsCount = fsi.CommandLineArgs |> Array.length
+fsi.AddPrinter<int>(fun value -> string value)
+"""
+            )
+
+            withKernel <| fun kernel events ->
+                kernel.SendAsync(SubmitCode($"#load @\"{scriptPath}\"")).Wait()
+
+                let observed = events() |> Seq.toArray
+                Assert.DoesNotContain(observed, fun event -> event :? CommandFailed)
+                Assert.Contains(observed, fun event -> event :? CommandSucceeded)
+        finally
+            File.Delete(scriptPath)
