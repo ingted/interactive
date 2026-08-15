@@ -53,6 +53,8 @@ dfTimer.Dispose()
 sourceTimer.Dispose()
 ```
 
+使用 Notebook 的 **Restart Kernel** 後不必關閉 TAB。Frontend 會在新 kernel client 建立時重新綁定 persistent-display listener；重新執行上面的 cell 即可建立屬於新 kernel 的兩個 timer。
+
 ## Persistent display 修改
 
 原始 VS Code frontend 只在 cell 執行期間接收該 command token 的 output；cell 完成後，獨立的 `UpdateDisplayedValue` 不會再被 render。本版讓 notebook controller 持續監聽 `DisplayedValueUpdated`，以相同 display ID 找到既有 output，再透過 VS Code 支援的 notebook execution API 原地替換內容。

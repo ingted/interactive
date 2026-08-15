@@ -38,7 +38,7 @@ export class DotNetNotebookKernel {
 
     private trackedOutputIds: Map<vscode.Uri, Set<string>> = new Map(); // tracks notebookUri => [trackedOutputId]
     private disposables: { dispose(): void }[] = [];
-    private persistentDisplaySubscriptions: Map<string, { unsubscribe(): void }> = new Map();
+    private persistentDisplaySubscriptions: Map<string, { client: InteractiveClient, subscription: { unsubscribe(): void } }> = new Map();
     private persistentDisplayUpdateStates: Map<string, PersistentDisplayUpdateState> = new Map();
 
     constructor(readonly config: DotNetNotebookKernelConfiguration, readonly tokensProvider: semanticTokens.DocumentSemanticTokensProvider) {
@@ -74,6 +74,18 @@ export class DotNetNotebookKernel {
         });
         this.commonControllerInit(jupyterController);
 
+        config.clientMapper.onClientCreate((uri, client) => {
+            const notebook = vscode.workspace.notebookDocuments.find(candidate => candidate.uri.toString() === uri.toString());
+            if (notebook && metadataUtilities.isDotNetNotebook(notebook)) {
+                const controller = notebook.notebookType === constants.JupyterViewType ? jupyterController : dibController;
+                this.startPersistentDisplayTracking(notebook, client, controller);
+            }
+        });
+
+        config.clientMapper.onClientDispose((uri, client) => {
+            this.stopPersistentDisplayTracking(uri, client);
+        });
+
         this.disposables.push(vscode.workspace.onDidOpenNotebookDocument(async notebook => {
             const controller = notebook.notebookType === constants.JupyterViewType ? jupyterController : dibController;
             await this.onNotebookOpen(notebook, config.clientMapper, controller);
@@ -81,7 +93,7 @@ export class DotNetNotebookKernel {
 
         this.disposables.push(vscode.workspace.onDidCloseNotebookDocument(notebook => {
             stopTrackingNotebook(notebook);
-            this.stopPersistentDisplayTracking(notebook);
+            this.stopPersistentDisplayTracking(notebook.uri);
         }));
 
         // ...but we may have to look at already opened ones if we were activated late
@@ -109,7 +121,7 @@ export class DotNetNotebookKernel {
     }
 
     dispose(): void {
-        this.persistentDisplaySubscriptions.forEach(subscription => subscription.unsubscribe());
+        this.persistentDisplaySubscriptions.forEach(tracked => tracked.subscription.unsubscribe());
         this.persistentDisplaySubscriptions.clear();
         this.persistentDisplayUpdateStates.clear();
         this.disposables.forEach(d => d.dispose());
@@ -137,7 +149,7 @@ export class DotNetNotebookKernel {
 
     private startPersistentDisplayTracking(notebook: vscode.NotebookDocument, client: InteractiveClient, controller: vscode.NotebookController): void {
         const notebookKey = notebook.uri.toString();
-        this.persistentDisplaySubscriptions.get(notebookKey)?.unsubscribe();
+        this.persistentDisplaySubscriptions.get(notebookKey)?.subscription.unsubscribe();
 
         const subscription = client.channel.receiver.subscribe({
             next: commandOrEventEnvelope => {
@@ -150,12 +162,17 @@ export class DotNetNotebookKernel {
             }
         });
 
-        this.persistentDisplaySubscriptions.set(notebookKey, subscription);
+        this.persistentDisplaySubscriptions.set(notebookKey, { client, subscription });
     }
 
-    private stopPersistentDisplayTracking(notebook: vscode.NotebookDocument): void {
-        const notebookKey = notebook.uri.toString();
-        this.persistentDisplaySubscriptions.get(notebookKey)?.unsubscribe();
+    private stopPersistentDisplayTracking(notebookUri: vscodeLike.Uri, client?: InteractiveClient): void {
+        const notebookKey = notebookUri.toString();
+        const tracked = this.persistentDisplaySubscriptions.get(notebookKey);
+        if (client && tracked?.client !== client) {
+            return;
+        }
+
+        tracked?.subscription.unsubscribe();
         this.persistentDisplaySubscriptions.delete(notebookKey);
         this.persistentDisplayUpdateStates.delete(notebookKey);
     }
