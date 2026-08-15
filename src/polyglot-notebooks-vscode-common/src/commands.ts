@@ -344,7 +344,7 @@ export function registerFileCommands(context: vscode.ExtensionContext, parserSer
         const isMarkdown = kernelName.toLowerCase() === 'markdown';
 
         // the metadata needs an actual kernel name, not the special-cased 'markdown'
-        const kernelNameInMetadata = isMarkdown ? 'csharp' : kernelName;
+        const kernelNameInMetadata = isMarkdown ? constants.DefaultKernelName : kernelName;
         const notebookCellMetadata: metadataUtilities.NotebookCellMetadata = {
             kernelName: kernelNameInMetadata,
         };

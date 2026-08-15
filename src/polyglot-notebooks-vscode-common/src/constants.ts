@@ -3,6 +3,7 @@
 
 // languages
 export const CellLanguageIdentifier = 'polyglot-notebook';
+export const DefaultKernelName = 'fsharp';
 
 // notebook controllers
 export const NotebookControllerId = 'polyglot-notebook';

@@ -311,7 +311,7 @@ public class CommandLineParserTests : IDisposable
     {
         _rootCommand.Parse($"jupyter {Path.GetTempFileName()}").Invoke();
 
-        _startupOptions.DefaultKernel.Should().Be("csharp");
+        _startupOptions.DefaultKernel.Should().Be("fsharp");
     }
 
     [Fact]
@@ -430,11 +430,11 @@ public class CommandLineParserTests : IDisposable
     }
 
     [Fact]
-    public void stdio_command_defaults_to_csharp_kernel()
+    public void stdio_command_defaults_to_fsharp_kernel()
     {
         _rootCommand.Parse("stdio").Invoke();
 
-        _startupOptions.DefaultKernel.Should().Be("csharp");
+        _startupOptions.DefaultKernel.Should().Be("fsharp");
     }
 
     [Fact]

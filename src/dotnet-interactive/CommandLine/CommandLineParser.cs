@@ -133,7 +133,7 @@ public static class CommandLineParser
         var defaultKernelOption = new Option<string>("--default-kernel")
         {
             Description = LocalizationResources.Cli_dotnet_interactive_jupyter_default_kernel_Description(),
-            DefaultValueFactory = _ => "csharp"
+            DefaultValueFactory = _ => "fsharp"
         };
         defaultKernelOption.CompletionSources.Add("fsharp", "csharp", "pwsh", "http");
 

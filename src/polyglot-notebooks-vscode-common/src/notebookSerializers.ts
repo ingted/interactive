@@ -20,7 +20,7 @@ function toInteractiveDocumentElement(cell: vscode.NotebookCellData): commandsAn
     };
     const notebookCellMetadata = metadataUtilities.getNotebookCellMetadataFromNotebookCellElement(tempCell);
     const outputs = cell.outputs || [];
-    const kernelName = cell.languageId === 'markdown' ? 'markdown' : notebookCellMetadata.kernelName ?? 'csharp';
+    const kernelName = cell.languageId === 'markdown' ? 'markdown' : notebookCellMetadata.kernelName ?? constants.DefaultKernelName;
 
     const interactiveDocumentElement: commandsAndEvents.InteractiveDocumentElement = {
         executionOrder: cell.executionSummary?.executionOrder ?? 0,

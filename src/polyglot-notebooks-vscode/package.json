@@ -11,7 +11,7 @@
   ],
   "preview": false,
   "//version": "%description.version%",
-  "version": "1.0.1-net10",
+  "version": "1.0.2-net10",
   "engines": {
     "vscode": "^1.87.0"
   },
@@ -125,7 +125,7 @@
             "string",
             "null"
           ],
-          "default": null,
+          "default": "fsharp",
           "description": "%description.defaultNotebookLanguage%",
           "enum": [
             "csharp",
@@ -211,7 +211,7 @@
         },
         "dotnet-interactive.requiredInteractiveToolVersion": {
           "type": "string",
-          "default": "1.0.722302",
+          "default": "1.0.722303",
           "description": "%description.requiredInteractiveToolVersion%"
         }
       }

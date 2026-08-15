@@ -6,7 +6,7 @@ Microsoft 已停止維護並封存原始 `.NET Interactive` / Polyglot Notebooks
 
 - VS Code `1.133.0`（extension 的 `engines.vscode` 為 `^1.87.0`）
 - .NET SDK `10.0.400`
-- `Microsoft.dotnet-interactive` `1.0.722302`
+- `Microsoft.dotnet-interactive` `1.0.722303`
 - `Deedle.DotNet.Interactive.Extension` `0.1.0-alpha15`
 
 Repository：<https://github.com/ingted/interactive>
@@ -17,8 +17,8 @@ Repository：<https://github.com/ingted/interactive>
 
 ```powershell
 dotnet tool uninstall -g Microsoft.dotnet-interactive
-dotnet tool install -g Microsoft.dotnet-interactive --add-source "G:\coldfar_py\interactive\自主版" --version 1.0.722302
-code --install-extension "G:\coldfar_py\interactive\自主版\stable\polyglot-net10-persistent-display-refresh-fsi.vsix" --force
+dotnet tool install -g Microsoft.dotnet-interactive --source "G:\coldfar_py\interactive\自主版" --version 1.0.722303
+code --install-extension "G:\coldfar_py\interactive\自主版\stable\polyglot-net10-fsharp-default.vsix" --force
 ```
 
 安裝後重新啟動 VS Code。Notebook 再載入：
@@ -58,6 +58,8 @@ sourceTimer.Dispose()
 ## FSI script 相容性
 
 F# kernel 現在會把 `FsiEvaluationSession` 使用的設定物件公開為標準 root-level `fsi`。Notebook 直接執行或以 `#load` 載入的 `.fsx`，可使用 `fsi.CommandLineArgs`、`fsi.AddPrinter` 等 FSI API。
+
+新 Notebook、空白文件與未攜帶 kernel metadata 的 code cell 預設使用 F#。既有 notebook 若已明確保存 C# 或其他 kernel metadata，仍尊重原設定。
 
 若載入的是長時間執行的 host 腳本，`#load` cell 會保持 running，直到 host 自己結束；這是 host lifecycle，不是載入失敗。
 

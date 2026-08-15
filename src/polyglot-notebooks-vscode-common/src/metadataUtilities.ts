@@ -4,6 +4,7 @@
 import { CompositeKernel } from './polyglot-notebooks';
 import * as commandsAndEvents from './polyglot-notebooks/commandsAndEvents';
 import * as vscodeLike from './interfaces/vscode-like';
+import * as constants from './constants';
 
 export interface NotebookDocumentMetadata {
     kernelInfo: commandsAndEvents.DocumentKernelInfoCollection;
@@ -459,10 +460,10 @@ export function mergeRawMetadata(baseMetadata: { [key: string]: any }, metadataW
 export function createDefaultNotebookDocumentMetadata(): NotebookDocumentMetadata {
     return {
         kernelInfo: {
-            defaultKernelName: 'csharp',
+            defaultKernelName: constants.DefaultKernelName,
             items: [
                 {
-                    name: 'csharp',
+                    name: constants.DefaultKernelName,
                     aliases: [],
                 }
             ],
