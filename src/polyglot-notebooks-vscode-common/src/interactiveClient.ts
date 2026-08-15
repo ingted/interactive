@@ -558,7 +558,7 @@ export class InteractiveClient {
         }
     }
 
-    private displayEventToCellOutput(disp: DisplayEvent, stream?: 'stdout' | 'stderr'): vscodeLike.NotebookCellOutput | null {
+    displayEventToCellOutput(disp: DisplayEvent, stream?: 'stdout' | 'stderr'): vscodeLike.NotebookCellOutput | null {
         const encoder = new TextEncoder();
         const outputItems: Array<vscodeLike.NotebookCellOutputItem> = [];
         if (disp.formattedValues && disp.formattedValues.length > 0) {

@@ -23,6 +23,11 @@ const executionTasks: Map<string, vscode.NotebookCellExecution> = new Map();
 const standardOutputMimeType = 'application/vnd.code.notebook.stdout';
 const standardErrorMimeType = 'application/vnd.code.notebook.stderr';
 
+interface PersistentDisplayUpdateState {
+    latestOutputs: Map<string, vscodeLike.NotebookCellOutput>;
+    running: boolean;
+}
+
 export interface DotNetNotebookKernelConfiguration {
     clientMapper: ClientMapper,
     preloadUris: vscode.Uri[],
@@ -33,6 +38,8 @@ export class DotNetNotebookKernel {
 
     private trackedOutputIds: Map<vscode.Uri, Set<string>> = new Map(); // tracks notebookUri => [trackedOutputId]
     private disposables: { dispose(): void }[] = [];
+    private persistentDisplaySubscriptions: Map<string, { unsubscribe(): void }> = new Map();
+    private persistentDisplayUpdateStates: Map<string, PersistentDisplayUpdateState> = new Map();
 
     constructor(readonly config: DotNetNotebookKernelConfiguration, readonly tokensProvider: semanticTokens.DocumentSemanticTokensProvider) {
         // ensure the tracked output ids are always fresh
@@ -68,16 +75,19 @@ export class DotNetNotebookKernel {
         this.commonControllerInit(jupyterController);
 
         this.disposables.push(vscode.workspace.onDidOpenNotebookDocument(async notebook => {
-            await this.onNotebookOpen(notebook, config.clientMapper, jupyterController);
+            const controller = notebook.notebookType === constants.JupyterViewType ? jupyterController : dibController;
+            await this.onNotebookOpen(notebook, config.clientMapper, controller);
         }));
 
         this.disposables.push(vscode.workspace.onDidCloseNotebookDocument(notebook => {
             stopTrackingNotebook(notebook);
+            this.stopPersistentDisplayTracking(notebook);
         }));
 
         // ...but we may have to look at already opened ones if we were activated late
         for (const notebook of vscode.workspace.notebookDocuments) {
-            this.onNotebookOpen(notebook, config.clientMapper, jupyterController);
+            const controller = notebook.notebookType === constants.JupyterViewType ? jupyterController : dibController;
+            this.onNotebookOpen(notebook, config.clientMapper, controller);
         }
 
         this.disposables.push(vscode.workspace.onDidOpenTextDocument(async textDocument => {
@@ -99,10 +109,13 @@ export class DotNetNotebookKernel {
     }
 
     dispose(): void {
+        this.persistentDisplaySubscriptions.forEach(subscription => subscription.unsubscribe());
+        this.persistentDisplaySubscriptions.clear();
+        this.persistentDisplayUpdateStates.clear();
         this.disposables.forEach(d => d.dispose());
     }
 
-    private async onNotebookOpen(notebook: vscode.NotebookDocument, clientMapper: ClientMapper, jupyterController: vscode.NotebookController): Promise<void> {
+    private async onNotebookOpen(notebook: vscode.NotebookDocument, clientMapper: ClientMapper, controller: vscode.NotebookController): Promise<void> {
         if (metadataUtilities.isDotNetNotebook(notebook)) {
             // prepare initial grammar
             const kernelInfos = metadataUtilities.getKernelInfosFromNotebookDocument(notebook);
@@ -111,13 +124,106 @@ export class DotNetNotebookKernel {
             // eagerly spin up the backing process
             const client = await clientMapper.getOrAddClient(notebook.uri);
             client.resetExecutionCount();
+            this.startPersistentDisplayTracking(notebook, client, controller);
 
             if (notebook.notebookType === constants.JupyterViewType) {
-                jupyterController.updateNotebookAffinity(notebook, vscode.NotebookControllerAffinity.Preferred);
+                controller.updateNotebookAffinity(notebook, vscode.NotebookControllerAffinity.Preferred);
                 await selectDotNetInteractiveKernelForJupyter();
             }
 
             await updateNotebookMetadata(notebook, this.config.clientMapper);
+        }
+    }
+
+    private startPersistentDisplayTracking(notebook: vscode.NotebookDocument, client: InteractiveClient, controller: vscode.NotebookController): void {
+        const notebookKey = notebook.uri.toString();
+        this.persistentDisplaySubscriptions.get(notebookKey)?.unsubscribe();
+
+        const subscription = client.channel.receiver.subscribe({
+            next: commandOrEventEnvelope => {
+                if (isKernelEventEnvelope(commandOrEventEnvelope) && commandOrEventEnvelope.eventType === commandsAndEvents.DisplayedValueUpdatedType) {
+                    const output = client.displayEventToCellOutput(commandOrEventEnvelope.event as commandsAndEvents.DisplayEvent);
+                    if (output) {
+                        this.schedulePersistentDisplayUpdate(notebook, controller, output);
+                    }
+                }
+            }
+        });
+
+        this.persistentDisplaySubscriptions.set(notebookKey, subscription);
+    }
+
+    private stopPersistentDisplayTracking(notebook: vscode.NotebookDocument): void {
+        const notebookKey = notebook.uri.toString();
+        this.persistentDisplaySubscriptions.get(notebookKey)?.unsubscribe();
+        this.persistentDisplaySubscriptions.delete(notebookKey);
+        this.persistentDisplayUpdateStates.delete(notebookKey);
+    }
+
+    private schedulePersistentDisplayUpdate(notebook: vscode.NotebookDocument, controller: vscode.NotebookController, output: vscodeLike.NotebookCellOutput): void {
+        const notebookKey = notebook.uri.toString();
+        let state = this.persistentDisplayUpdateStates.get(notebookKey);
+        if (!state) {
+            state = { latestOutputs: new Map(), running: false };
+            this.persistentDisplayUpdateStates.set(notebookKey, state);
+        }
+
+        state.latestOutputs.set(output.id, output);
+        this.startPersistentDisplayUpdateLoop(notebookKey, notebook, controller, state);
+    }
+
+    private startPersistentDisplayUpdateLoop(notebookKey: string, notebook: vscode.NotebookDocument, controller: vscode.NotebookController, state: PersistentDisplayUpdateState): void {
+        if (state.running) {
+            return;
+        }
+
+        state.running = true;
+        this.processPersistentDisplayUpdates(notebookKey, notebook, controller, state)
+            .catch(err => Logger.default.error(`Failed to refresh a persistent display: ${err}`))
+            .finally(() => {
+                state.running = false;
+                if (this.persistentDisplayUpdateStates.get(notebookKey) !== state) {
+                    return;
+                }
+
+                if (state.latestOutputs.size > 0) {
+                    this.startPersistentDisplayUpdateLoop(notebookKey, notebook, controller, state);
+                } else {
+                    this.persistentDisplayUpdateStates.delete(notebookKey);
+                }
+            });
+    }
+
+    private async processPersistentDisplayUpdates(notebookKey: string, notebook: vscode.NotebookDocument, controller: vscode.NotebookController, state: PersistentDisplayUpdateState): Promise<void> {
+        while (!notebook.isClosed && this.persistentDisplayUpdateStates.get(notebookKey) === state && state.latestOutputs.size > 0) {
+            const next = state.latestOutputs.entries().next().value as [string, vscodeLike.NotebookCellOutput];
+            state.latestOutputs.delete(next[0]);
+            await this.applyPersistentDisplayUpdate(notebook, controller, next[1]);
+        }
+    }
+
+    private async applyPersistentDisplayUpdate(notebook: vscode.NotebookDocument, controller: vscode.NotebookController, output: vscodeLike.NotebookCellOutput): Promise<void> {
+        const cell = notebook.getCells().find(candidate => candidate.outputs.some(existing => existing.metadata?.id === output.id));
+        if (!cell || executionTasks.has(cell.document.uri.toString())) {
+            return;
+        }
+
+        const existingOutputs = cell.outputs.map(existing => existing.metadata?.id === output.id
+            ? generateVsCodeNotebookCellOutput(output)
+            : existing);
+        const previousSummary = cell.executionSummary;
+        const executionTask = controller.createNotebookCellExecution(cell);
+        let ended = false;
+        try {
+            executionTask.start();
+            executionTask.executionOrder = previousSummary?.executionOrder;
+            await executionTask.replaceOutput(existingOutputs);
+            executionTask.end(previousSummary?.success);
+            ended = true;
+        } finally {
+            if (!ended) {
+                executionTask.end(previousSummary?.success);
+            }
         }
     }
 
