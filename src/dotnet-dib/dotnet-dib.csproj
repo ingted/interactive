@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Microsoft.DotNet.Interactive.Dib.App</RootNamespace>
+    <AssemblyName>dotnet-dib</AssemblyName>
+    <LangVersion>Latest</LangVersion>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dotnet-dib</ToolCommandName>
+    <PackageId>dotnet-dib</PackageId>
+    <IsPackable>true</IsPackable>
+    <PackageDescription>Runs .dib polyglot notebooks using .NET Interactive.</PackageDescription>
+    <PackageTags>dotnet interactive dib polyglot notebook csharp fsharp</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\dotnet-interactive\dotnet-interactive.csproj" />
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+</Project>
