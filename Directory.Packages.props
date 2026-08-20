@@ -95,9 +95,9 @@
     <PackageVersion Include="System.Reflection.Metadata" Version="10.0.0" />
     <PackageVersion Include="System.Runtime.Caching" Version="10.0.0" />
     <PackageVersion Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.0" />
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.11" />
     <PackageVersion Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
-    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.0" />
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.11" />
     <PackageVersion Include="System.Text.Json" Version="10.0.0" />
     <PackageVersion Include="ThreadJob" Version="2.0.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />

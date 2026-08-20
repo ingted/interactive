@@ -1,10 +1,10 @@
 {
-  "name": "dotnet-interactive-vscode",
-  "displayName": "Polyglot Notebooks",
-  "description": "%description.package%",
+  "name": "coldfar-interactive-notebooks",
+  "displayName": "Coldfar Interactive Notebooks",
+  "description": ".NET Interactive notebooks maintained for F# and Deedle users.",
   "icon": "images/icon.png",
-  "publisher": "ms-dotnettools",
-  "author": "Microsoft Corporation",
+  "publisher": "ingted",
+  "author": "ingted",
   "license": "MIT",
   "enabledApiProposals": [
     "notebookMessaging"
@@ -16,10 +16,10 @@
     "vscode": "^1.87.0"
   },
   "bugs": {
-    "url": "https://github.com/dotnet/interactive/issues"
+    "url": "https://github.com/ingted/interactive/issues"
   },
   "repository": {
-    "url": "https://github.com/dotnet/interactive"
+    "url": "https://github.com/ingted/interactive"
   },
   "categories": [
     "Data Science",
@@ -70,7 +70,7 @@
     "notebooks": [
       {
         "type": "polyglot-notebook",
-        "displayName": "Polyglot Notebook",
+        "displayName": "Coldfar Interactive Notebook",
         "selector": [
           {
             "filenamePattern": "*.dib"
@@ -79,7 +79,7 @@
       },
       {
         "type": "polyglot-notebook-window",
-        "displayName": "Polyglot Notebook",
+        "displayName": "Coldfar Interactive Notebook",
         "selector": []
       }
     ],

@@ -11,6 +11,23 @@ import {
 } from "../../src/vscode-common/polyglot-notebooks";
 
 describe(`metadata utility tests`, async () => {
+    it("default notebook metadata identifies the F# grammar", () => {
+        const metadata = metadataUtilities.createDefaultNotebookDocumentMetadata();
+
+        expect(metadata).to.deep.equal({
+            kernelInfo: {
+                defaultKernelName: "fsharp",
+                items: [
+                    {
+                        name: "fsharp",
+                        aliases: [],
+                        languageName: "F#",
+                    },
+                ],
+            },
+        });
+    });
+
     it("ipynb notebooks can be identified", () => {
         const notebookDocument: vscodeLike.NotebookDocument = {
             uri: {

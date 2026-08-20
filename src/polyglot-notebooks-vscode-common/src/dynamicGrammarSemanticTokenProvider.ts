@@ -590,8 +590,9 @@ function normalizeLanguageName(languageName: string): string {
 }
 
 function languageNameFromKernelInfo(kernelInfo: commandsAndEvents.KernelInfo): string {
-    // ensure we have some kind of language name, even if it doesn't map to anything
-    return normalizeLanguageName(kernelInfo.languageName ?? `unknown-language-from-kernel-${kernelInfo.localName}`);
+    // Older notebook metadata can omit languageName even when the local kernel name
+    // is the registered language id (for example, localName "fsharp").
+    return normalizeLanguageName(kernelInfo.languageName ?? kernelInfo.localName);
 }
 
 export function parseLanguageConfiguration(content: string): any {

@@ -457,7 +457,7 @@ export function registerFileCommands(context: vscode.ExtensionContext, parserSer
 }
 
 export async function selectDotNetInteractiveKernelForJupyter(): Promise<void> {
-    const extension = 'ms-dotnettools.dotnet-interactive-vscode';
+    const extension = 'ingted.coldfar-interactive-notebooks';
     const id = constants.JupyterKernelId;
     await vscode.commands.executeCommand('notebook.selectKernel', { extension, id });
 }

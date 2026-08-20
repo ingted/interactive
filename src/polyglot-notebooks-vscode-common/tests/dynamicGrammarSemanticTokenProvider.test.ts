@@ -335,6 +335,28 @@ describe('dynamic grammar tests', async () => {
         ]);
     });
 
+    it('tokens use the local kernel name when language name is missing', async () => {
+        const kernelInfoWithoutLanguageName: commandsAndEvents.KernelInfo = {
+            isComposite: false,
+            isProxy: false,
+            localName: 'csharp',
+            uri: 'kernel://csharp',
+            languageName: undefined,
+            aliases: [],
+            displayName: '',
+            supportedKernelCommands: []
+        };
+        dynamicTokenProvider.rebuildNotebookGrammar(testUri, [kernelInfoWithoutLanguageName]);
+
+        const tokens = await getTokens(kernelInfoWithoutLanguageName.localName, '// C# comment');
+        expect(tokens).to.deep.equal([
+            {
+                tokenText: '// C# comment',
+                tokenType: 'polyglot-notebook-comment'
+            }
+        ]);
+    });
+
     it('tokens are not parsed when no language name is specified in KernelInfo', async () => {
         const updatedKernelInfos: commandsAndEvents.KernelInfo[] = [
             {

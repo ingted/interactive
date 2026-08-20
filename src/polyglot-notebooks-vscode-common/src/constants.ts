@@ -4,6 +4,7 @@
 // languages
 export const CellLanguageIdentifier = 'polyglot-notebook';
 export const DefaultKernelName = 'fsharp';
+export const DefaultKernelLanguageName = 'F#';
 
 // notebook controllers
 export const NotebookControllerId = 'polyglot-notebook';

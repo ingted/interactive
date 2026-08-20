@@ -465,6 +465,7 @@ export function createDefaultNotebookDocumentMetadata(): NotebookDocumentMetadat
                 {
                     name: constants.DefaultKernelName,
                     aliases: [],
+                    languageName: constants.DefaultKernelLanguageName,
                 }
             ],
         }

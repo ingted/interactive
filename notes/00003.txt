@@ -1,0 +1,67 @@
+› websharper 繪製的 ta 分析圖有辦法整合進 polyglot notebook 嗎?
+
+
+• 可以整合，但關鍵在 WebSharper 圖表最後產生的是「可嵌入 HTML/JavaScript」還是必須依賴一個持續運行的 WebSharper server。我查一下目前 Polyglot Notebook 的 HTML
+  display 邊界與 WebSharper 官方輸出方式，再給你最穩的整合選項。
+
+• Searching the web
+
+• Searched the web for site:dotnet.github.io/interactive HTML display Polyglot Notebooks F# HTML ...
+
+• Searching the web
+
+• Searched the web for site:github.com/dotnet/interactive HTML display notebook Kernel HTML content Polyglot Notebooks ...
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 可以，而且最穩定的整合方式是：
+
+  Polyglot Notebook
+  └─ HTML output / iframe
+     └─ 本機 WebSharper TA chart host
+        ├─ WebSharper.UI
+        ├─ Chart.js／Plotly／ECharts binding
+        └─ WebSocket／HTTP 接收 TA 更新
+
+  Notebook 裡可以直接放：
+
+  #!html
+  <iframe
+    src="http://127.0.0.1:8787/ta-chart"
+    style="width:100%; height:720px; border:0">
+  </iframe>
+
+  為什麼建議 iframe，而不是直接把 WebSharper Doc 丟進 F# cell：
+
+  - WebSharper client code必須先編譯成 JavaScript，並載入它的 bundle、CSS、bootstrap與相依套件。
+  - WebSharper client-side Doc 是透過 Doc.Run 等操作 browser DOM；server-side View 不會自動傳播到 client DOM。WebSharper 官方文件
+    (https://docs.websharper.com/)
+
+  - Notebook cell 直接輸出 HTML 不等於完整 WebSharper page lifecycle；inline <script> 也可能被 VS Code webview 的 CSP 或重新 render 行為擋住。
+  - iframe 有自己完整的 DOM、JS runtime與資源載入週期，縮放、十字游標、tooltip、drawing、WebSocket更新都比較可靠。
+
+  對你的 TA 分析，我會建議這樣切：
+
+  MDCQ ES 1K range/live
+          │
+          ▼
+  Notebook F# actor
+  ├─ 更新 Deedle 1K/5K frame
+  ├─ 計算 TA／策略結果
+        Indicators: Map<string, float option>
+        Signals: Signal array }
+
+  這樣不需要每分鐘重畫整個 HTML，也不會讓 Notebook output 不斷新增。
+
+  另一種做法是產生完整 standalone HTML，再讓 Notebook iframe 它；適合靜態分析，但不如 local host 適合 realtime。
+
+  要注意兩件事：
+
+  - WebSharper host 應只 bind 127.0.0.1；若 iframe 顯示被擋，需檢查 X-Frame-Options／CSP frame-ancestors。
+  - Polyglot Notebooks 已於 2026-03-27 deprecated，.NET Interactive 也已於 2026-04-24 deprecated；現有安裝仍能用，但官方不再新增功能或一般性修 bug。官方公告
+    (https://github.com/dotnet/interactive/issues/4163)
+    因此把 WebSharper 圖表做成獨立、可嵌入的 local web app 很合理：未來即使換 Notebook host，TA 圖不用重寫。
+
+  結論：能整合；推薦「獨立 WebSharper chart host＋Notebook iframe」，不要試圖把完整 WebSharper runtime 硬塞進每個 F# cell。
+
+────────────────────────────────────────────────────────────────

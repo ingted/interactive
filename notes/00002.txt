@@ -1,0 +1,28 @@
+• 有，是 cb8d2e57 feat: default notebooks to F# 這次改動引入的 regression，不是 persistent display refresh 造成的。
+
+  具體機制：
+
+  - /G:/coldfar_py/interactive/src/polyglot-notebooks-vscode-common/src/metadataUtilities.ts:460 把預設 kernel 改成 fsharp，但 metadata item 只有 name:
+    "fsharp"，沒有 languageName: "F#"。
+
+  - /G:/coldfar_py/interactive/src/polyglot-notebooks-vscode-common/src/dynamicGrammarSemanticTokenProvider.ts:576 遇到缺少 languageName 時，會產生 unknown-
+    language-from-kernel-fsharp，不會回退使用 localName = fsharp。
+
+  - 目前開啟的 /G:/coldfar_py/coldfar-symbolics/misc/coldfar-symbolics-replay-evidence/dmi-three-path/quarter-roll-streaming/fsstl.dib:3 正好就是
+    {"name":"fsharp"}，沒有 languageName。
+
+  - VS Code log 明確出現 Error loading grammar for scope source.fsharp: no grammar found。
+
+  我使用目前安裝的 Ionide F# grammar 做 A/B probe：
+
+  - 缺少 languageName：0 個 semantic tokens。
+  - 加入 languageName: "F#"：3 個 semantic tokens。
+
+  修復時應同時處理兩層：
+
+  1. 新 notebook metadata 明確寫入 languageName: "F#"。
+  2. Grammar provider 在 languageName 缺失時回退使用 kernelInfo.localName，讓既有 .dib 也能自動恢復高亮。
+
+  本輪只有診斷，尚未修改程式碼。
+
+─ Worked for 5m 02s ───────────────

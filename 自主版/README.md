@@ -6,10 +6,58 @@ Microsoft 已停止維護並封存原始 `.NET Interactive` / Polyglot Notebooks
 
 - VS Code `1.133.0`（extension 的 `engines.vscode` 為 `^1.87.0`）
 - .NET SDK `10.0.400`
-- `Microsoft.dotnet-interactive` `1.0.722303`
+- `Microsoft.dotnet-interactive` `1.0.741801`
 - `Deedle.DotNet.Interactive.Extension` `0.1.0-alpha15`
 
 Repository：<https://github.com/ingted/interactive>
+
+## 自主 extension identity 與 stdio 防護
+
+VSIX 使用自己的 extension ID：`ingted.coldfar-interactive-notebooks`。它不再沿用 Marketplace 已標記 deprecated 的 `ms-dotnettools.dotnet-interactive-vscode`，也不會在首次啟動時開啟上游的 deprecation 頁面。部署時不可讓新舊兩個 ID 並存，否則會重複註冊 notebook controller。
+
+啟動 kernel 與 notebook parser 時會設定 `DOTNET_NOLOGO=1`、`DOTNET_CLI_TELEMETRY_OPTOUT=1`；即使外部程序仍把 banner 或其他非協議文字寫到 stdout，也只會送往 diagnostics，不會再當作 JSON envelope 解析而中止 notebook。
+
+## 建置自主版 tool 與 VSIX
+
+更新 `Microsoft.DotNet.Interactive.FSharp` 或其他 kernel 程式碼後，從 repository 任意目錄執行正式建置腳本。腳本預設使用 MSBuild／Arcade 算出的版本，建立同版本的 global tool package 與 VSIX，並安裝該 global tool：
+
+Windows PowerShell 5.1：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\coldfar_py\interactive\src\dotnet-interactive\build-and-install-dotnet-interactive.ps1"
+```
+
+PowerShell 7：
+
+```powershell
+pwsh -NoProfile -File "G:\coldfar_py\interactive\src\dotnet-interactive\build-and-install-dotnet-interactive.ps1"
+```
+
+需要固定版本或只建立產物、不替換 global tool 時：
+
+```powershell
+pwsh -NoProfile -File "G:\coldfar_py\interactive\src\dotnet-interactive\build-and-install-dotnet-interactive.ps1" `
+    -ToolVersion 1.0.741801 `
+    -SkipInstall
+```
+
+產物位置：
+
+- `自主版\Microsoft.dotnet-interactive.<version>.nupkg`
+- `自主版\stable\coldfar-interactive-notebooks-<version>.vsix`
+
+VSIX 內的 `requiredInteractiveToolVersion` 與 `interactiveToolSource` 會指向本次產生的同版本 nupkg 與 `自主版` 目錄；原始 `package.json` 在封裝後會 byte-for-byte 還原。
+
+建置腳本會先修復 Windows checkout 中的 Git source symlink，再編譯 extension，避免 `src/vscode-common` 只是相對路徑文字檔時誤把舊的 JavaScript 包進 VSIX。
+
+如果 tool nupkg 已成功、只有前端封裝失敗，可以從 VSIX 階段繼續，不必重建 tool：
+
+```powershell
+pwsh -NoProfile -File "G:\coldfar_py\interactive\src\dotnet-interactive\build-and-install-dotnet-interactive.ps1" `
+    -ToolVersion 1.0.741801 `
+    -ReuseToolPackage `
+    -SkipInstall
+```
 
 ## 部署
 
@@ -17,8 +65,9 @@ Repository：<https://github.com/ingted/interactive>
 
 ```powershell
 dotnet tool uninstall -g Microsoft.dotnet-interactive
-dotnet tool install -g Microsoft.dotnet-interactive --source "G:\coldfar_py\interactive\自主版" --version 1.0.722303
-code --install-extension "G:\coldfar_py\interactive\自主版\stable\polyglot-net10-fsharp-default.vsix" --force
+dotnet tool install -g Microsoft.dotnet-interactive --source "G:\coldfar_py\interactive\自主版" --version 1.0.741801
+code --uninstall-extension ms-dotnettools.dotnet-interactive-vscode
+code --install-extension "G:\coldfar_py\interactive\自主版\stable\coldfar-interactive-notebooks-1.0.741801.vsix" --force
 ```
 
 安裝後重新啟動 VS Code。Notebook 再載入：

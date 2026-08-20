@@ -101,15 +101,6 @@ async function activateCore(context: vscode.ExtensionContext, diagnosticsChannel
 
     await waitForSdkPackExtension();
 
-    // show deprecation notice on first activation
-    const deprecationShownKey = 'polyglotNotebooks.deprecationNoticeShown';
-    const hasShownDeprecation = context.globalState.get<boolean>(deprecationShownKey, false);
-    if (!hasShownDeprecation) {
-        const helpServiceInstance = new helpService.HelpService(context);
-        await helpServiceInstance.showHelpPage(helpService.Deprecation);
-        await context.globalState.update(deprecationShownKey, true);
-    }
-
     // this must happen early, because some following functions use the acquisition command
     await registerAcquisitionCommands(context, diagnosticsChannel);
 
@@ -128,7 +119,7 @@ async function activateCore(context: vscode.ExtensionContext, diagnosticsChannel
         vscode.window.showErrorMessage(`Please install the .NET SDK version ${minDotNetSdkVersion} from https://dotnet.microsoft.com/en-us/download/dotnet/${minDotNetSdkVersion}`);
     }
 
-    if (showHelpPage && hasShownDeprecation) {
+    if (showHelpPage) {
         const helpServiceInstance = new helpService.HelpService(context);
         await helpServiceInstance.showHelpPageAndThrow(helpService.DotNetVersion);
     }
@@ -361,8 +352,8 @@ async function activateCore(context: vscode.ExtensionContext, diagnosticsChannel
             switch (uri.path) {
                 case '/newNotebook':
                     // Examples:
-                    //   vscode://ms-dotnettools.dotnet-interactive-vscode/newNotebook?as=dib
-                    //   vscode://ms-dotnettools.dotnet-interactive-vscode/newNotebook?as=ipynb
+                    //   vscode://ingted.coldfar-interactive-notebooks/newNotebook?as=dib
+                    //   vscode://ingted.coldfar-interactive-notebooks/newNotebook?as=ipynb
                     const asType = params.get('as');
                     vscode.commands.executeCommand('dotnet-interactive.acquire').then(() => {
                         const commandName = asType === 'ipynb'
@@ -373,9 +364,9 @@ async function activateCore(context: vscode.ExtensionContext, diagnosticsChannel
                     break;
                 case '/openNotebook':
                     // Open a local notebook
-                    //   vscode://ms-dotnettools.dotnet-interactive-vscode/openNotebook?path=C%3A%5Cpath%5Cto%5Cnotebook.dib
+                    //   vscode://ingted.coldfar-interactive-notebooks/openNotebook?path=C%3A%5Cpath%5Cto%5Cnotebook.dib
                     // New untitled notebook from remote source
-                    //   vscode://ms-dotnettools.dotnet-interactive-vscode/openNotebook?url=http%3A%2F%2Fexample.com%2Fnotebook.dib
+                    //   vscode://ingted.coldfar-interactive-notebooks/openNotebook?url=http%3A%2F%2Fexample.com%2Fnotebook.dib
                     const notebookPath = params.get('path');
                     const url = params.get('url');
                     const notebookFormat = params.get('notebookFormat');

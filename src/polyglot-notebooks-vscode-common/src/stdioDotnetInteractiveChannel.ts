@@ -15,7 +15,7 @@ import {
 import { ProcessStart } from './interfaces';
 import { ReportChannel } from './interfaces/vscode-like';
 import { LineReader } from './lineReader';
-import { isNotNull, parse, stringify } from './utilities';
+import { getDotnetProcessEnvironment, isNotNull, parse, stringify } from './utilities';
 import { DotnetInteractiveChannel } from './DotnetInteractiveChannel';
 import {
     IKernelCommandAndEventReceiver,
@@ -70,7 +70,7 @@ export class StdioDotnetInteractiveChannel implements DotnetInteractiveChannel {
             let args = processStart.args;
             // launch the process
             this.diagnosticChannel.appendLine(`Starting kernel for '${notebookPath}' using: ${processStart.command} ${args.join(' ')}`);
-            const processEnv = { ...process.env, ...processStart.env };
+            const processEnv = getDotnetProcessEnvironment(processStart.env);
             let childProcess = cp.spawn(processStart.command, args, { cwd: processStart.workingDirectory, env: processEnv });
             let pid = childProcess.pid;
 
@@ -112,14 +112,21 @@ export class StdioDotnetInteractiveChannel implements DotnetInteractiveChannel {
         return this._receiver;
     }
 
-    private async handleLine(line: string): Promise<void> {
+    private handleLine(line: string): void {
+        const trimmedLine = line.trim();
+        if (trimmedLine.length === 0) {
+            return;
+        }
+
+        let envelope: any;
         try {
-            const garbage = parse(line);
+            envelope = parse(trimmedLine);
         }
-        catch (e) {
-            const x = e;
+        catch {
+            this.diagnosticChannel.appendLine(`kernel (${this.childProcess?.pid}) non-protocol stdout: ${line}`);
+            return;
         }
-        const envelope = parse(line);
+
         Logger.default.info(`envelope received from stdio: ${JSON.stringify(envelope)}`);
         if (isKernelEventEnvelopeModel(envelope)) {
             switch (envelope.eventType) {

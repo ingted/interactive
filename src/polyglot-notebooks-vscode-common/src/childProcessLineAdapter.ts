@@ -4,6 +4,7 @@
 import * as cp from 'child_process';
 import { ReportChannel } from './interfaces/vscode-like';
 import { LineReader } from './lineReader';
+import { getDotnetProcessEnvironment } from './utilities';
 
 // A `LineAdapter` allows lines to be submitted for writing as well as allows for callbacks for when a line is read.
 export interface LineAdapter {
@@ -20,18 +21,18 @@ export class ChildProcessLineAdapter implements LineAdapter {
         this._lineReader = new LineReader();
 
         function spawnProcess(lineReader: LineReader, respawnCallback?: (process: cp.ChildProcessWithoutNullStreams) => void): cp.ChildProcessWithoutNullStreams {
-            const process = cp.spawn(command, args, { cwd: workingDirectory });
-            outputChannel.appendLine(`Started process ${process.pid}: ${command} ${args.join(' ')}`);
-            process.stdout.on('data', (data: Buffer) => lineReader.onData(data));
-            process.stderr.on('data', (data: Buffer) => outputChannel.appendLine(`process ${process.pid} stderr: ${data.toString('utf-8')}`));
-            process.on('exit', (code: number, signal: string) => {
-                outputChannel.appendLine(`Process '${command}' with PID ${process.pid} exited with code ${code} and signal ${signal}`);
+            const childProcess = cp.spawn(command, args, { cwd: workingDirectory, env: getDotnetProcessEnvironment() });
+            outputChannel.appendLine(`Started process ${childProcess.pid}: ${command} ${args.join(' ')}`);
+            childProcess.stdout.on('data', (data: Buffer) => lineReader.onData(data));
+            childProcess.stderr.on('data', (data: Buffer) => outputChannel.appendLine(`process ${childProcess.pid} stderr: ${data.toString('utf-8')}`));
+            childProcess.on('exit', (code: number, signal: string) => {
+                outputChannel.appendLine(`Process '${command}' with PID ${childProcess.pid} exited with code ${code} and signal ${signal}`);
                 if (keepAlive && respawnCallback) {
                     const reSpawned = spawnProcess(lineReader, respawnCallback);
                     respawnCallback(reSpawned);
                 }
             });
-            return process;
+            return childProcess;
         }
 
         this._cp = spawnProcess(this._lineReader, respawned => { this._cp = respawned; });

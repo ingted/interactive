@@ -12,6 +12,15 @@ import * as connection from './polyglot-notebooks/connection';
 import { OutputChannelAdapter } from './OutputChannelAdapter';
 import { Logger } from './polyglot-notebooks';
 
+export function getDotnetProcessEnvironment(overrides: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
+    return {
+        ...process.env,
+        ...overrides,
+        DOTNET_NOLOGO: '1',
+        DOTNET_CLI_TELEMETRY_OPTOUT: '1',
+    };
+}
+
 export function executeSafe(command: string, args: Array<string>, workingDirectory?: string | undefined): Promise<{ code: number, output: string, error: string }> {
     return new Promise<{ code: number, output: string, error: string }>(resolve => {
         try {

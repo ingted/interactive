@@ -1,0 +1,1001 @@
+請閱讀
+G:\coldfar_py\interactive\notes\00003.txt
+
+請參考
+C:\Users\Administrator\test_gemini\PulseTrade.Comm.Spa.Dynamic\src\PulseTrade.Comm.Spa.Dynamic.fsproj
+G:\PulseTrade.fs\Libs\PulseTrade.Comm\src\PulseTrade.Comm.Spa.Host\PulseTrade.Comm.Spa.Host.fsproj
+G:\PulseTrade2.fs\Libs\PulseTrade.Comm.Spa\PulseTrade.Comm.Spa.fsproj
+
+開發一個 PulseTrade.Comm.Spa.Dynamic.Interactive.Extension
+假設裡面有一個 type SDUI = | SDUIJson of string
+
+而我在一個 cell 裡面放了一個 SDUIJson "<sdui TA 分析 json string>" 並且 execute
+我希望 cell output 會出現可互動，有導覽縮圖/vertical cross row cursor/k bar with sma/dmi/macd... 的 MULTI ROW TA 分析圖
+
+請在對上述三個專案最小異動的情況下進行 SA 與 SD，完成系統設計之後，先直接開發 PulseTrade.Comm.Spa.Dynamic.Interactive.Extension 專案的 所有 .fsi 簽名檔 (函數/method signature 定型) + .fs 檔 (型別宣告)
+
+確保能編譯且 .fsi / .fs 要包含完整的實作前註解
+
+我們目前的 interactive 專案已經不是微軟的，而是自己維護的，所以你上面的擔心可以忽略
+
+PulseTrade.Comm.Spa.Dynamic.Interactive.Extension 記得參考 G:\coldfar_py\interactive 裡面的專案
+
+有問題先討論
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+• Service tier set to priority
+
+• Service tier set to default
+
+         |                                                                ~
+         | An empty pipe element is not allowed.
+
+• Ran $paths=@('G:\coldfar_py\interactive\notes\00003.txt','G:\coldfar_py\interactive\AGENTS.md','G:\coldfar_py\interactive\GEMINI.md','C:
+  │ \Users\Administrator\test_gemini\PulseTrade.Comm.Spa.Dynamic\AGENTS.md','C:\Users\Administrator\test_gemini\PulseTrade.Comm.Spa.Dynamic\GEMINI.md','G:
+  │ \PulseTrade.fs\AGENTS.md','G:\PulseTrade.fs\GEMINI.md','G:\PulseTrade2.fs\AGENTS.md','G:\PulseTrade2.fs\GEMINI.md'); $rows=foreach($p in $paths)
+  │ … +2 lines
+  └
+    Path                                                                     Exists Length
+    … +77 lines (ctrl + t to view transcript)
+
+    ────────────────────────────────────────────────────────────────
+
+• Ran '--- G:\PulseTrade.fs\AGENTS.md ---'; Get-Content -LiteralPath 'G:\PulseTrade.fs\AGENTS.md' -Encoding UTF8; '--- G:\PulseTrade.fs\GEMINI.md ---';
+  │ Get-Content -LiteralPath 'G:\PulseTrade.fs\GEMINI.md' -Encoding UTF8
+  └ --- G:\PulseTrade.fs\AGENTS.md ---
+    # AGENTS.md
+    … +403 lines (ctrl + t to view transcript)
+
+• Ran $a=Get-Content -LiteralPath 'G:\PulseTrade.fs\AGENTS.md' -Encoding UTF8; '--- AGENTS 1-170 ---'; $a[0..169]; '--- AGENTS 171-340 ---'; $a[170..339];
+  │ '--- AGENTS 341-END ---'; $a[340..($a.Length-1)]
+  └ --- AGENTS 1-170 ---
+    # AGENTS.md
+    … +285 lines (ctrl + t to view transcript)
+    --- AGENTS 341-END ---
+
+• 我已讀完 00003.txt 與 G:\PulseTrade.fs 的專案規範。接下來先用唯讀方式把三個 SPA 專案的既有責任、Interactive 擴充 API 與新專案落點對齊；若現有結構能唯一判
+  斷，我就直接完成 SA／SD 與可編譯的合約骨架，不動三個參考專案。
+
+• Started `/root/dynamic_spa_review`
+
+• Started `/root/dynamic_spa_review`
+
+• Started `/root/spa_host_review`
+
+• Started `/root/spa_host_review`
+
+• Started `/root/spa_interactive_review`
+
+• Started `/root/spa_interactive_review`
+
+• Running git rev-parse --show-toplevel; git status --short; Get-ChildItem -Force | Select-Object Name,Mode,Length
+
+• Running git rev-parse --show-toplevel; git status --short; Get-ChildItem -Force | Select-Object Name,Mode,Length
+
+• Running git rev-parse --show-toplevel; git status --short; Get-ChildItem -Force | Select-Object Name,Mode,Length
+    Domain.fs:494:type ChatMessage =
+    Domain.fs:515:type ActorRoutee =
+
+• Ran Write-Output 'CODEC'; Get-Content -LiteralPath src\PulseTrade.Comm.Spa.Dynamic.Contracts\RuntimeCodec.fs -Encoding UTF8; Write-Output 'REDUCER
+  │ TYPES+PUBLIC'; rg -n '^type |^\[<|^module |^    let [a-zA-Z]' src\PulseTrade.Comm.Spa.Dynamic.Contracts\RuntimeReducer.fs | Select-Object -First 220;
+  │ Write-Output 'RENDER PUBLIC'; rg -n '^type |^\[<|^module |^    let [a-zA-Z]|abstract member' src\PulseTrade.Comm.Spa.Dynamic.Renderer\Renderer.fs |
+  │ … +1 lines
+  └ CODEC
+    namespace PulseTrade.Comm.Spa.Dynamic.Contracts
+    … +106 lines (ctrl + t to view transcript)
+    493:    let renderRow (state: RuntimeState) (ui: TaRendererUiState) visibleTimestamps setCursorIndex showSharedTimeAxis (row: TaRowSpec) =
+    510:    let render (options: TaRendererOptions) (callbacks: TaRendererCallbacks) (runtimeState: Var<RuntimeState>) =
+
+• Ran Get-Content -LiteralPath src\PulseTrade.Comm.Spa.Dynamic.Ptcs.Client\Client.fs -Encoding UTF8 | Select-Object -Skip 640 -First 90; Write-Output 'HOST
+  │ EXPORT'; Get-Content -LiteralPath src\Server\TaResearchTransient.fs -Encoding UTF8 | Select-Object -Skip 700 -First 180
+  └       SetActive: bool -> unit
+          RequestJsonExport: unit -> Result<string, string>
+    … +267 lines (ctrl + t to view transcript)
+                    else
+                        try
+
+• Ran rg -n 'wireTo|stateFrom|applyWire|TaBrowserStateWire|type TaBrowser' src\PulseTrade.Comm.Spa.Dynamic.Ptcs.Client\Client.fs
+  │ src\Server\TaResearchTransient.fs | Select-Object -First 240
+  └ src\Server\TaResearchTransient.fs:104:type TaBrowserPointWire =
+    src\Server\TaResearchTransient.fs:120:type TaBrowserSeriesWire =
+    … +19 lines (ctrl + t to view transcript)
+    src\PulseTrade.Comm.Spa.Dynamic.Ptcs.Client\Client.fs:851:                                match TaResearchClientWire.applyWire runtimeState.Value wire
+    with
+
+• Waiting for agents
+
+• Finished waiting
+  └ No agents completed yet
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+• 盤點後有兩個會直接影響公開 signature 的歧義，所以我先不寫檔案。
+
+  現有 Dynamic Renderer 已經具備所需的 multi-row K Bar、SMA／DMI／MACD、導覽縮圖與跨列 vertical cursor，不需要重畫一套。建議架構是：
+
+  SDUIJson
+    → 嚴格解析與驗證
+    → 127.0.0.1 loopback render session
+    → notebook formatter 輸出 iframe
+    → 沿用既有 Dynamic Renderer
+
+  三個參考專案第一階段都可零修改；新專案放在：
+
+  C:\Users\Administrator\test_gemini\PulseTrade.Comm.Spa.Dynamic\src\PulseTrade.Comm.Spa.Dynamic.Interactive.Extension
+
+  並直接參考 G:\coldfar_py\interactive 的 Interactive 與 Formatting 專案。完整的 production PulseTrade.Comm.Spa.Host 不會被當作 library 引入。
+
+  需要你確認兩點：
+
+  1. SDUIJson 第一版是否以現有完整格式為準：
+      - 主要支援 ptcs-ta-research-export.v1
+      - 同時支援 raw ta-browser.v3 full snapshot
+      - 拒絕 delta-only
+      - 暫不把「單一 sdui-runtime.v1 RuntimeFrame」視為完整分析圖，因為單一 frame 只有 Document 或 Snapshot，資料不足
+
+  2. 第一版「可互動」是否限定 browser-local 操作：navigator、zoom、vertical cross-row cursor、hover values、row 顯示／隱藏；需要 backend 的 Change Query、Add/
+     Remove Row、Reset Canvas 則先 disabled。
+
+  如果這兩點成立，我就依上述路徑撰寫 SA、SD，接著建立完整 .fsi signatures、.fs 型別宣告與可編譯專案。
+
+
+─ Worked for 7m 36s ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+» Write tests for @filename
+
+  gpt-5.6-sol ultra · G:\coldfar_py\coldfar-symbolics · Main [default]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› 1. a. raw ta-browser.v3 full snapshot -> 這是什麼?
+     b. 拒絕 delta-only -> 這是什麼?
+     c. 單一 sdui-runtime.v1 RuntimeFrame 完整不完整的邊界是?定義是?
+     d. 單一 frame 只有 Document 或 Snapshot -> 什麼意思? 資料不足 -> 為什麼?
+  2. 需要 backend 的情況會很麻煩嗎?啟動一個 spa host 或者搞一個閹割版 spa host?
+
+
+• 先釐清一個核心概念：RuntimeFrame 是「一次狀態轉移訊息」，不是「完整畫面的檔案」。我前面把這兩個層級講在一起，才會顯得奇怪。
+
+  1. 這些格式分別是什麼？
+
+  ### a. raw ta-browser.v3 full snapshot
+
+  現有正式下載檔大致是：
+
+  ptcs-ta-research-export.v1
+  └─ state
+     └─ ta-browser.v3
+        ├─ updateKind = "full"
+        ├─ rows
+        ├─ timeline
+        ├─ series
+        ├─ status
+        ├─ query
+        └─ revisions
+
+  也就是：
+
+  {
+    "schema": "ptcs-ta-research-export.v1",
+    "exportedAtUtc": "...",
+    "documentRevision": 12,
+    "dataRevision": 34,
+    "state": {
+      "wireVersion": "ta-browser.v3",
+      "updateKind": "full",
+      "rows": [],
+      "timeline": [],
+      "series": []
+    }
+  }
+
+  所謂 raw ta-browser.v3 full snapshot，只是把外層 export envelope 拿掉，直接提供裡面的 state：
+
+  {
+    "wireVersion": "ta-browser.v3",
+    "updateKind": "full",
+    "rows": [],
+    "timeline": [],
+    "series": []
+  }
+
+  它不是另一套 trader-facing 格式，而是目前 browser renderer 已在使用的內部、扁平化 DTO。
+
+  我的建議可以再收斂：
+
+  - trader-facing 正式輸入只承認 ptcs-ta-research-export.v1
+  - raw ta-browser.v3 full 僅作內部測試／程式串接能力
+  - 不需要在使用說明裡要求 trader 認識 ta-browser.v3
+
+  ### b. delta-only 是什麼？
+
+  full 帶有建立完整畫面所需的目前狀態。
+
+  delta 只帶「相對於上一版增加或改變的部分」，概念上像：
+
+  我以 dataRevision=34 為基礎，
+  現在新增了第 35～40 根資料，
+  並把 freshness 更新為 Live。
+
+  它不會重新攜帶完整的：
+
+  - 所有 rows/traces
+  - 全部歷史 K Bar
+  - 所有 SMA／DMI／MACD 點
+  - 完整 query/default view
+  - 先前已存在的狀態
+
+  所以若只有 delta、卻沒有它宣告的 baseDataRevision，無法知道：
+
+  - 這些點應接在哪一段資料後面
+  - 原本有哪些 row
+  - 哪個 series 對應哪個 trace
+  - navigator 的完整 loaded range
+  - 缺少的資料是真的沒有，還是存在於前一版
+
+  「拒絕 delta-only」就是：不能拿一個沒有 base state 的增量訊息，假裝它是一份完整 TA 分析檔。
+
+  如果 notebook 裡已經存在相符的 base state，當然可以接收 delta；拒絕的是「單獨載入一份 delta 當作完整新畫面」。
+
+  ### c. 單一 sdui-runtime.v1 RuntimeFrame 的完整邊界
+
+  需要分成兩種完整性：
+
+  1. Message-complete
+
+     單一 RuntimeFrame 可以是完整、合法的一則訊息。
+
+  2. Render-state-complete
+
+     單一 frame 通常不足以還原完整 TA 畫面。
+
+  現有 RuntimeFrame 的 Kind 只能是以下其中一種：
+
+   Kind         負責內容
+  ━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Document     畫面結構、rows、traces、dataRef、default view、allowed actions
+  ───────────  ────────────────────────────────────────────────────────────────
+   Snapshot     各 dataRef 的完整資料與 freshness
+  ───────────  ────────────────────────────────────────────────────────────────
+   Patch        相對於既有 snapshot 的增量變更
+  ───────────  ────────────────────────────────────────────────────────────────
+   Error        錯誤狀態
+  ───────────  ────────────────────────────────────────────────────────────────
+   Heartbeat    連線／活性資訊
+
+  每個 frame 只有一種 Kind，而且 Kind 必須和 Payload 相符。
+
+  一份可畫出 TA 圖的 render state，最低通常是：
+
+  Document frame
+    + Snapshot frame
+    → RuntimeReducer
+    → RuntimeState
+    → Renderer
+
+  更精確的邊界是：
+
+  - Document 已定義 visible rows、traces 與其 dataRef
+  - Snapshot 提供這些 dataRef 對應的資料
+  - 兩者的 DocumentId／CanvasInstanceId 一致
+  - revision／sequence 可以合法合併
+  - 至少有能建立 shared time axis 的主要時間序列
+  - 指標 warm-up 前的缺值可以合法存在，不代表整份狀態不完整
+
+  因此，「所有指標每一點都有值」不是完整性的必要條件；但「連 row 要讀哪個 dataRef 都不知道」或「只有 dataRef、沒有資料」就不足以還原完整畫面。
+
+  ### d. 為什麼單一 frame 只有 Document 或 Snapshot？
+
+  這是現有型別的設計：
+
+  type RuntimePayload =
+      | Document of TaWorkspaceDocument
+      | Snapshot of RuntimeSnapshot
+      | Patch of RuntimePatch
+      | Error of RuntimeError
+      | Heartbeat of RuntimeHeartbeat
+
+  一個 DU value 一次只能是其中一個 case。
+
+  Document 類似圖表配置：
+
+  第一列：K Bar + SMA13 + SMA21
+  第二列：DMI7 + ADX7
+  第三列：MACD 34/89/144
+  共用時間軸、預設顯示最後 160 根
+
+  它不保存 2000 根 OHLCV 與指標數值。
+
+  Snapshot 類似資料表：
+
+  series.es.ohlcv = [...]
+  series.sma13    = [...]
+  series.dmi7     = [...]
+  series.macd     = [...]
+
+  但它本身不負責告訴 renderer：
+
+  - 哪些 series 要放同一列
+  - 哪個是 candlestick、line 或 histogram
+  - row 順序與高度
+  - 哪些 trace 初始隱藏
+  - 哪個 series 是 shared time-axis authority
+
+  所以兩者合併才是完整 RuntimeState。
+
+  2. 需要 backend 會不會很麻煩？
+
+  要看是哪一種互動。
+
+  不需要 backend 的功能：
+
+  - navigator 拖曳
+  - zoom／pan
+  - vertical cross-row cursor
+  - hover/current values
+  - row/trace 顯示隱藏
+  - browser-local Reset View
+
+  這些只要完整 export JSON 和既有 Dynamic Renderer 即可。
+
+  需要 backend 的功能：
+
+  - 換商品、日期範圍、K 棒尺度
+  - Add Row 並要求計算新的 SMA／DMI／MACD
+  - Reset Canvas 回復後端定義的原始 document
+  - 即時追加 K Bar／indicator delta
+  - reconnect／resync
+  - 查詢目前 JSON 沒攜帶的歷史資料
+
+  不建議在 notebook kernel 裡啟動完整 PulseTrade.Comm.Spa.Host。它是 production executable，還會帶入：
+
+  - Login／ACL
+  - Resource Node
+  - Actor fabric
+  - SQL／TAResearch provider
+  - production WebSocket session
+  - extension loading與其他 PTCS lifecycle
+
+  對 notebook 顯示一張 TA 圖而言太重。
+
+  比較合理的是一個小型 InteractiveRenderHost：
+
+  Kernel
+  └─ InteractiveRenderHost（127.0.0.1）
+     ├─ 保存本次 SDUI JSON
+     ├─ 提供 iframe HTML
+     ├─ 提供 Dynamic Renderer assets
+     └─ 可選的 typed action endpoint
+
+  靜態版本甚至只需要：
+
+  GET /sdui/{opaque-id}
+  GET /sdui/{opaque-id}/state
+  GET /assets/...
+
+  不需要 ActorSystem、登入、ACL 或 SQL。
+
+  若需要 backend action，可以再增加一個很小的入口：
+
+  POST /sdui/{opaque-id}/action
+    SduiAction
+      → backend callback
+      → RuntimeFrame
+      → browser reducer
+
+  所以答案是：
+
+  - 啟動完整 SPA Host：會很麻煩，而且責任過重。
+  - 做一個「閹割版 SPA Host」：名稱與責任容易混淆。
+  - 做一個用途明確的小型 InteractiveRenderHost：不算太麻煩，也是目前最適合的方向。
+
+  第一版可以讓 InteractiveRenderHost 支援完整靜態 TA 圖與 browser-local interaction；backend 用一個 typed callback seam 保留，但目前不硬接 PTCS Host。這樣既不
+  重寫 renderer，也不把整套 production SPA 塞進 notebook。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› 1. 所以到底要決策什麼?
+  2. cell output 到底能不能是可互動的 spa? 如果可以，那依照原架構，用 suave 建立一個客製化的 spa host 只用來 feeding quote/marketdata 還會太 heavy 嗎?
+
+
+• 真正需要決策的只有「TA 計算放在哪裡」，不是要你選那些 JSON 名稱。
+
+  1. 要決策什麼？
+
+  兩個方向：
+
+  - A（建議、符合原架構）：Kernel／TA provider 組 K、計算 SMA／DMI／MACD，再把 canonical RuntimeFrame 交給 Suave host；browser 只負責互動與繪圖。
+  - B：Suave host 傳 raw quote 給 browser，由 browser 組 K、計算指標。這會在 browser 建立第二套 TA runtime，偏離現有架構。
+
+  full、delta 不需要你決策：實作自然就是第一次送 full state，之後送 delta。
+
+  2. Cell output 能不能是可互動 SPA？
+
+  可以。cell output 顯示 iframe，iframe 裡就是完整 WebSharper SPA：
+
+  Notebook cell
+    └─ iframe
+        └─ WebSharper TA SPA
+            ├─ navigator
+            ├─ zoom/pan
+            ├─ vertical cross-row cursor
+            ├─ K + SMA/DMI/MACD
+            └─ WebSocket 即時更新
+
+  不需要重新執行 cell，也不會不斷新增 output。資料到達後，原本那個 cell 裡的圖直接更新。
+
+  3. 客製化 Suave host 會不會太 heavy？
+
+  不會。重的是完整 PulseTrade.Comm.Spa.Host，不是 Suave。
+
+  合理作法是在 Interactive Extension 內：
+
+  - 每次 Kernel 啟動只啟動一個 Suave listener。
+  - bind 127.0.0.1 與動態 port。
+  - 所有 cell 共用該 host。
+  - 每個 SDUIJson 建立獨立 session。
+  - Kernel restart 時停止 listener 並清理 sessions。
+
+  最小路由大約是：
+
+  GET /sdui/{sessionId}       SPA page
+  GET /sdui/{sessionId}/data  初始 full state
+  WS  /sdui/{sessionId}/ws    後續 RuntimeFrame delta
+  GET /assets/...             WebSharper bundle/CSS
+
+  如果要讓 SPA 送 Change Query、Add Row 等操作回 Kernel，再讓同一條 WebSocket 接收 typed SduiAction 即可。
+
+  因此我建議直接定案為：
+
+  Kernel/TA provider
+    → 組 K、計算指標
+    → RuntimeFrame full/delta
+    → 小型 Suave Interactive SPA Host
+    → cell iframe 裡的既有 Dynamic Renderer
+
+  三個參考專案仍可維持零修改。新專案負責 Suave hosting、session registry、Interactive formatter，以及既有 Dynamic Renderer 的 browser bootstrap。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› 這裡說的 browser 其實就是 vs code 對吧?
+
+
+• 更精確地說，是 VS Code Notebook cell 裡的 Webview。
+
+  結構是：
+
+  VS Code
+  └─ Notebook Webview
+     └─ cell output
+        └─ iframe
+           └─ WebSharper TA SPA（browser runtime）
+
+  所以：
+
+  - 使用者看到的是 VS Code cell output。
+  - JavaScript、DOM、SVG、navigator、cross-row cursor 都在 VS Code 的 Webview／iframe 裡執行。
+  - 不會另外打開 Chrome 或 Edge。
+  - Suave 只是 Kernel process 中的 localhost server，提供 SPA 頁面、資源與即時資料。
+  - iframe 透過 http://127.0.0.1:<dynamic-port>/... 載入 SPA。
+
+  我前面所說的 browser，是指 VS Code Webview 裡具備 browser 能力的 Chromium runtime，不是外部瀏覽器。
+
+
+
+
+
+
+
+
+
+
+
+
+
+› A 跟 B 差異
+
+
+• Model changed to gpt-5.6-sol xhigh
+
+• A、B 的差別只在「誰負責組 K 與計算技術指標」，圖表互動都在 VS Code Webview。
+
+                        A：F# backend 計算                     B：VS Code Webview 計算
+  ━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MDCQ 資料送到        Kernel／Live-Engine                    Webview SPA
+  ───────────────────  ─────────────────────────────────────  ────────────────────────────
+   5K/30K/60K 組合      F#                                     JavaScript/WebSharper
+  ───────────────────  ─────────────────────────────────────  ────────────────────────────
+   SMA/DMI/MACD 計算    FSharp.Indicators 等既有 provider      Webview 需另寫一套
+  ───────────────────  ─────────────────────────────────────  ────────────────────────────
+   Suave 傳送內容       已完成的 OHLCV、指標及 RuntimeFrame    raw quote／marketdata
+  ───────────────────  ─────────────────────────────────────  ────────────────────────────
+   計算結果一致性       Backtest/LIVE/Notebook 共用            可能與 F# 結果產生差異
+  ───────────────────  ─────────────────────────────────────  ────────────────────────────
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› G:\PulseTrade.fs\Sinopac\demo\e2eQuotation\PulseTrade.MarketData.E2EQuotation.fsproj 這個專案的 TA 是前端計算還是後端?
+
+
+• 目前是「混合式」，不是單純前端或後端；但 legacy Realtime TA 的主要計算仍在前端。
+
+  - G:/PulseTrade.fs/Sinopac/demo/e2eQuotation/Client.fs:7 整個 Client module 標記 [<JavaScript>]，會編譯到 VS Code／瀏覽器的 JavaScript runtime。
+  - G:/PulseTrade.fs/Sinopac/demo/e2eQuotation/Client.fs:1434 的 taRowsFromCandlesWithSettings 在前端呼叫 FSharp.Indicators.JsComposite.batch，計算 SMA、DMI/
+    ADX、MACD、Heikin-Ashi。
+
+  - Realtime fills 與本機 fallback historical path 都會走這套前端計算。
+
+  但後端路徑也已存在：
+
+  - G:/PulseTrade.fs/Sinopac/demo/e2eQuotation/Server.fs:1274 以 BackendTaProjection.project 計算 Historical TA，回傳 projectedRows。
+  - G:/PulseTrade.fs/Sinopac/demo/e2eQuotation/Client.fs:6088 收到 historical response 時，優先使用後端的 projectedRows；後端沒提供才退回前端重算。
+  - G:/PulseTrade.fs/Sinopac/demo/e2eQuotation/Client.fs:6884 也能接收後端 ta-projection-stream-append 增量結果。
+
+  因此目前實際情況是：
+
+  Realtime legacy path：前端組 K、前端算 TA
+  Historical path：後端算 TA 優先，前端 fallback
+  Backend projection stream：已有 client 接收能力
+  圖表繪製與 cursor/navigator：前端
+
+  也就是先前的 A/B 中，這個專案目前還保留大量 B；它正在往 A 遷移，但尚未完全移除前端 TA 計算。
+
+─ Worked for 1m 08s ──────────────────────────
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› 1. 決策選 A
+  2. 記得參考 G:/coldfar_py/coldfar-symbolics/SymbolicNet6.Interactive.Extension，我們的閹割版 suave spa host 要能吃 quoteslot (步進報價源) 以及 marketdata
+  (資料集報價源) 的資料提供 TA 指標值與 K BAR OHLCV
+
+  以上決策有問題嗎?
+
+
+• 沒有根本問題，A 可以定案。整體資料流會是：
+
+  QuoteSlot（步進報價）
+  MarketData（資料集報價）
+          ↓
+  Interactive TA Runtime（F# backend）
+  ├─ K Bar aggregation
+  ├─ OHLCV series
+  ├─ SMA／DMI／MACD 等 TA provider
+  └─ RuntimeFrame full／delta
+          ↓
+  精簡 Suave SPA Host
+          ↓ WebSocket
+  VS Code cell iframe／WebSharper Renderer
+
+  有三個邊界要在 SA／SD 寫清楚：
+
+  1. Suave 只負責 hosting 與傳輸
+
+  K Bar 與 TA 計算仍在同一個 backend process，但不要寫進 Suave route handler。Suave 層只做：
+
+  - 提供 SPA/assets
+  - 管理 cell render session
+  - WebSocket 傳送 RuntimeFrame
+  - 接收 typed SduiAction
+
+  2. SDUIJson 不能直接攜帶 QuoteSlot 物件
+
+  JSON 應保存 stable slot key，例如：
+
+  {
+    "dataSource": {
+      "provider": "quoteSlot",
+      "slotKey": "es-live"
+    }
+  }
+
+  F# Kernel runtime 內另有 slot registry：
+
+  "es-live" → 已註冊的 QuoteSlot instance
+  "es-history" → 已註冊的 MarketData source
+
+  這樣不需要把 F# object、delegate 或 credential 塞進 JSON。
+
+  3. 兩種資料源具有不同推進語意
+
+  - QuoteSlot：逐 step 到達，增量組 K、增量計算 TA、推送 delta。
+  - MarketData：依 range/cursor 讀取資料集，建立初始 full state，也可進行 replay。
+  - 兩者最後都投影成相同的 K Bar／TA RuntimeFrame，Renderer 不需要知道來源種類。
+
+  SymbolicNet6.Interactive.Extension 會作為以下實作參考：
+
+  - maintained Interactive 專案的 ProjectReference
+  - IKernelExtension 載入方式
+  - formatter 註冊與 preferred MIME
+  - nupkg 的 interactive-extensions/dotnet 結構
+  - Kernel restart/disposal lifecycle
+
+  所以不需要再決策 A/B。接下來 SA／SD 的正式方向就是：F# backend 計算、精簡 Suave host 推送、VS Code Webview 只負責互動與呈現。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› 不同 quoteslot 都會有相同的取 1k 函數 or 方法對嗎? (類似 interface spec)
+
+
+• 對，概念上就是共同的 interface spec。但目前不是設計成所有 slot 都提供一個 get1K() pull 方法，而是統一成「產生 1K step」的介面。
+
+  目前共同型別概念如下：
+
+  QuoteSlot<CompletedMarketBar>
+
+  所有提供 1K 步進的 provider adapter，都要先把自己的原生格式轉成：
+
+  CompletedMarketBar
+
+  然後提供相同操作：
+
+  slot.RunHistorical
+      startUtc
+      endUtcExclusive
+      commitStep
+      cancellationToken
+
+  slot.RunLive
+      commitStep
+      cancellationToken
+
+  其中每次交給 engine 的內容一致：
+
+  QuoteStep<CompletedMarketBar>
+
+  也就是：
+
+  { StepIndex: int64
+    EventTimeUtc: DateTimeOffset
+    ReceivedTimeUtc: DateTimeOffset
+    Value: CompletedMarketBar }
+
+  所以不同來源應該是：
+
+  MDCQ alpha.66.22 ─┐
+  SQL historical    ├─ provider adapter ─> QuoteSlot<CompletedMarketBar>
+  其他行情 API      ┘
+
+  Engine 不應知道它來自 MDCQ、SQL 或其他 vendor，只吃同一種 QuoteStep<CompletedMarketBar>。
+
+  需要特別區分兩件事：
+
+  - QuoteSlot：逐根交付 1K，驅動 FRP NEXT／CURSOR。
+  - MarketDataSlot：用 ReadTimeRange 取得整段 dataset，不驅動 NEXT。
+
+  因此你的理解是對的：不同的 1K QuoteSlot 必須遵守相同介面；差別只能留在 adapter 與 config 內。
+
+  目前尚未完全通用的是「任意商品、任意 scale 的 binding」。現有 alpha.66.22 factory 還是 ES-specific，但 QuoteSlot 消費端的步進介面已經相同。未來比較合理的
+  trader-facing 語意會像：
+
+  engine.BindQuote(
+      "PRIMARY",
+      source = "alpha66",
+      instrument = "ES",
+      scale = K 1
+  )
+
+  後面的 strategy 只看 PRIMARY 對應的 1K series，不碰 provider-specific API。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› SymbolicNet6.Interactive.Extension 主要是希望你看到 FloatingPoint 與 cell 的互動，現在 SDUI 畫的 TA 資料型別大致上就是 FloatingPoint ，資料存取介面就是經過
+  不同 slot
+
+  記得讀取 G:\coldfar_py\interactive\notes\00004.txt lin 116~178
+
+  宅有其他沒有 align 的事項嗎?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+• 有，現在確認到幾個需要修正的地方；其中只有「專案實體位置」還需要你決定。
+
+  1. SDUIJson 的定位要改
+
+  我先前把它當成完整 TA export，這不符合現在對齊的模型。
+
+  正確定位應該是：
+
+  SDUIJson
+    = 畫面結構
+    + row/trace 定義
+    + slot binding
+    + 顯示參數
+
+  資料不必全部塞在 JSON。ptcs-ta-research-export.v1 只能作匯出／靜態重播格式，不再是主要輸入契約。
+
+  2. 不另外發明 slot registry
+
+  現有型別已經把語意分得很清楚：
+
+  - SymbolicNet6.TradeCore/QuoteSlot.fs:29：QuoteSlot<'T> 會驅動 step。
+  - SymbolicNet6.TradeCore/MarketDataSlot.fs:24：MarketDataSlot<'T> 只做 bounded dataset query，不產生 FRP NEXT。
+  - SymbolicNet6.TradeCore/RuntimeProfile.fs:65：已經有 MarketDataSlotConfig、QuoteSlotConfig 與 IndicatorProviderSlotConfig。
+
+  因此 Interactive TA Runtime 應直接消費現有 slots：
+
+  MarketDataSlot
+    → 載入 warm-up／歷史範圍
+
+  QuoteSlot
+    → 從最後 committed time 繼續逐 step 更新
+
+  兩者不能硬塞成同一種 push interface，但可匯入同一個 TA evaluation pipeline。
+
+  3. FloatingPoint 是 SDUI data binding 的值域
+
+  SymbolicNet6/Expression.fs:63 已涵蓋：
+
+  - Real／Decimal／Int／Undef
+  - OHLC／OHLCD
+  - Frame／Series
+  - FC／FC2／FCI／FCC
+  - vector、matrix、tensor 等
+
+  所以不應再建立一套 notebook-specific TaPointValue。
+
+  但 browser wire 不應直接序列化所有 FloatingPoint cases。需要一層受控投影：
+
+  FloatingPoint
+    → SDUI row/trace 所需的 bounded presentation data
+    → RuntimeFrame
+    → WebSharper Renderer
+
+  例如：
+
+  - K Bar：OHLC／OHLCD
+  - 指標線：帶時間 key 的 Real／Decimal／Undef series
+  - 表格：Frame、Series、FC row shapes
+  - Context、function、slot object、PCSL 本體不得整顆傳進 Webview
+
+  4. 時間座標不能只傳純 FloatingPoint.Real
+
+  跨列 cursor 要求所有 K Bar、SMA、DMI、MACD 對齊相同時間軸。因此 scalar indicator 必須保留：
+
+  time key + FloatingPoint
+
+  時間 authority 可來自：
+
+  - QuoteStep.EventTimeUtc
+  - MarketDataPoint.EventTimeUtc
+  - OHLCD 的 int64 key
+  - Deedle Series／Frame row key
+
+  不能把 indicator 壓成無 key 的 float array，否則跨列 cursor 仍可能錯位。
+
+  5. SymbolicNet6.Interactive.Extension 的參考重點
+
+  不是單純照抄 package layout，而是沿用它目前的 cell 型別分派：
+
+  - cell 回傳 FloatingPoint：現有 formatter 顯示 scalar/table/Frame/Tensor。
+  - cell 回傳 SDUIJson：新 formatter 建立 SPA session，顯示互動 TA 圖。
+  - 兩個 formatter 並存，不互相取代。
+
+  唯一尚未對齊的是新專案實體位置。我現在建議放在：
+
+  G:\coldfar_py\coldfar-symbolics\PulseTrade.Comm.Spa.Dynamic.Interactive.Extension
+
+  因為它直接依賴 FloatingPoint、QuoteSlot、MarketDataSlot、IndicatorProviderSlot，這些都由 coldfar-symbolics／TradeCore 擁有；Dynamic Renderer 則作為外部 UI
+  dependency。若仍放在 test_gemini\PulseTrade.Comm.Spa.Dynamic\src，依賴方向會變成 PulseTrade Dynamic repo 直接綁 TradeCore。
+
+  除了專案位置，功能與資料流目前已對齊。
+
+─ Worked for 1m 48s ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› 請依照我們的討論過程與討論結果，繼續之前的 SA -> SD -> signature project 開發

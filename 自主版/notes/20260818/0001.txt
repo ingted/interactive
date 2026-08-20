@@ -1,0 +1,24 @@
+• 完成。後續不會再花這麼久；初次執行是在修復封存 repo 的殘缺 Node dependencies 與失效 Azure npm source。
+
+  成果：
+
+  - 正式腳本：G:/coldfar_py/interactive/src/dotnet-interactive/build-and-install-dotnet-interactive.ps1:1
+  - 操作文件：G:/coldfar_py/interactive/自主版/README.md:13
+  - Tool package：G:\coldfar_py\interactive\自主版\Microsoft.dotnet-interactive.1.0.741801.nupkg
+  - VSIX：G:/coldfar_py/interactive/自主版/stable/polyglot-net10-1.0.741801.vsix
+  - Global tool 1.0.741801 已安裝成功。
+  - Windows PowerShell 5.1 與 PowerShell 7 語法均通過。
+  - VSIX 實測建置成功，後續依賴完整時約 48 秒。
+
+  安裝 VSIX：
+
+  code --install-extension "G:\coldfar_py\interactive\自主版\stable\polyglot-net10-1.0.741801.vsix" --force
+
+  日後完整 build＋pack＋install：
+
+  powershell -NoProfile -ExecutionPolicy Bypass -File `
+    "G:\coldfar_py\interactive\src\dotnet-interactive\build-and-install-dotnet-interactive.ps1"
+
+  目前尚未 commit/push。既有 Directory.Packages.props 修改沒有被覆蓋或納入我的變更。
+
+─ Worked for 17m 42s ───────────────────────────────────────────────────────────────────
