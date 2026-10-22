@@ -137,7 +137,18 @@ public class TelemetrySender
             var eventProperties = GetEventProperties(properties);
             var eventMetrics = GetEventMetrics(metrics);
 
-            _client.TrackEvent($"{_eventsNamespace}/{eventName}", eventProperties, eventMetrics);
+            var telemetryEventName = $"{_eventsNamespace}/{eventName}";
+            _client.TrackEvent(telemetryEventName, eventProperties);
+
+            foreach (var eventMetric in eventMetrics)
+            {
+                var metricProperties = new Dictionary<string, string>(eventProperties)
+                {
+                    ["TelemetryEventName"] = telemetryEventName
+                };
+                _client.TrackMetric(eventMetric.Key, eventMetric.Value, metricProperties);
+            }
+
             _client.Flush();
         }
         catch (Exception e)
