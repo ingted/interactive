@@ -355,21 +355,56 @@ if (-not $SkipInstall) {
         throw "Unable to list globally installed .NET tools."
     }
 
-    $isInstalled = $null -ne ($installedTools |
+    $installedToolLine = $installedTools |
         Where-Object { $_ -match '^\s*Microsoft\.dotnet-interactive\s+' } |
-        Select-Object -First 1)
+        Select-Object -First 1
 
-    if ($isInstalled) {
+    $installedVersion = if ($null -ne $installedToolLine) {
+        @($installedToolLine -split '\s+' | Where-Object { $_ })[1]
+    } else {
+        $null
+    }
+
+    if ($installedVersion -eq $ToolVersion) {
+        Write-Host "[build-and-install] Reinstalling the existing version $ToolVersion."
+        Invoke-NativeCommand -FilePath "dotnet" -WorkingDirectory $repoRoot -Arguments @(
+            "tool", "uninstall", "--global", "Microsoft.dotnet-interactive")
+        Invoke-NativeCommand -FilePath "dotnet" -WorkingDirectory $repoRoot -Arguments @(
+            "tool", "install", "--global", "Microsoft.dotnet-interactive",
+            "--source", $OutputDirectory,
+            "--version", $ToolVersion,
+            "--no-http-cache")
+    } elseif ($null -ne $installedVersion) {
         Invoke-NativeCommand -FilePath "dotnet" -WorkingDirectory $repoRoot -Arguments @(
             "tool", "update", "--global", "Microsoft.dotnet-interactive",
             "--source", $OutputDirectory,
             "--version", $ToolVersion,
+            "--no-http-cache",
             "--allow-downgrade")
     } else {
         Invoke-NativeCommand -FilePath "dotnet" -WorkingDirectory $repoRoot -Arguments @(
             "tool", "install", "--global", "Microsoft.dotnet-interactive",
             "--source", $OutputDirectory,
-            "--version", $ToolVersion)
+            "--version", $ToolVersion,
+            "--no-http-cache")
+    }
+
+    $verifiedTools = & dotnet tool list --global
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to verify globally installed .NET tools."
+    }
+
+    $verifiedToolLine = $verifiedTools |
+        Where-Object { $_ -match '^\s*Microsoft\.dotnet-interactive\s+' } |
+        Select-Object -First 1
+    $verifiedVersion = if ($null -ne $verifiedToolLine) {
+        @($verifiedToolLine -split '\s+' | Where-Object { $_ })[1]
+    } else {
+        $null
+    }
+
+    if ($verifiedVersion -ne $ToolVersion) {
+        throw "Global tool verification failed. Expected Microsoft.dotnet-interactive $ToolVersion."
     }
 }
 
