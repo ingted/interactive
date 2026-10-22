@@ -55,10 +55,6 @@
     <PackageReference Include="PocketLogger">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="PocketLogger.For.ApplicationInsights" >
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="PocketLogger.Subscribe">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -195,4 +191,14 @@
     <Message Text="##vso[task.setvariable variable=StableToolVersionNumber]$(Version)" Importance="high" />
   </Target>
 
+
+  <ItemGroup>
+    <None Include="..\..\PostBuildEvent.ps1" Link="PostBuildEvent.ps1" />
+  </ItemGroup>
+
+  <Target Name="PostPackNugetDeployWindows"
+          AfterTargets="Pack"
+          Condition="$([MSBuild]::IsOSPlatform('Windows')) and ('$(Configuration)' == 'Debug' or '$(Configuration)' == 'Release')">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\..\PostBuildEvent.ps1&quot; -PackageId &quot;$(PackageId)&quot; -PackageVersion &quot;$(PackageVersion)&quot; -Configuration &quot;$(Configuration)&quot; -ProjectDirectory &quot;$(MSBuildProjectDirectory)&quot; -PackageFilePath &quot;$([System.IO.Path]::Combine('$(PackageOutputPath)', '$(PackageId).$(PackageVersion).nupkg'))&quot;" />
+  </Target>
 </Project>

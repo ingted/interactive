@@ -37,4 +37,14 @@
     <Folder Include="Utility\" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Include="..\..\PostBuildEvent.ps1" Link="PostBuildEvent.ps1" />
+  </ItemGroup>
+
+  <Target Name="PostPackNugetDeployWindows"
+          AfterTargets="Pack"
+          Condition="$([MSBuild]::IsOSPlatform('Windows')) and ('$(Configuration)' == 'Debug' or '$(Configuration)' == 'Release')">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\..\PostBuildEvent.ps1&quot; -PackageId &quot;$(PackageId)&quot; -PackageVersion &quot;$(PackageVersion)&quot; -Configuration &quot;$(Configuration)&quot; -ProjectDirectory &quot;$(MSBuildProjectDirectory)&quot; -PackageFilePath &quot;$([System.IO.Path]::Combine('$(PackageOutputPath)', '$(PackageId).$(PackageVersion).nupkg'))&quot;" />
+  </Target>
 </Project>
